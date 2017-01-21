@@ -12,57 +12,54 @@
 
 #include "gnl.h"
 
-int 	ft_precise_scan(char *str)
-{	
-	// READ STR 
-
-	// RETURN POSITION OF THE \n or EOF 
+// SCAN :D 
+int 	ft_searchbak(char *bufr)
+{
+	if (ft_strchr(bufr, '\0'))
+		return (2);
+	else if (ft_strchr(bufr, '\n'))
+		return (1);
+	else
+		return (0);
 }
 
-int 	ft_scan(char *str)
+int 	after_cpy(char **line, char *bufr)
 {
-	// SCANNER EOF AND \n
+	// Do not forget to no copy \n.
+	//read(fd, buf, BUFF_SIZE)
+}
 
-	// RETURN 1 for presence
-	// 0 FOR ABSENCE
+int 	detect_zero(char *bufr)
+{
+	// Simply detect a \0 to do a correct return .
 }
 
 int		get_next_line(const int fd, char **line)
 {
-	int		fd;
-	int		byte_read;
-	char	buf[BUF_SIZE];
-	char 	*str;
+	int 		stop;
+	static char	bufr[BUF_SIZE + 1]; // Whole text before the last \n of the last exec
+	char 		*str;
 
-	byte_read = 0;
-	fd = open(file_path, O_RDONLY);
-	if (fd == -1)
+	stop = 1;
+	if (fd < 0 || !line) // Validity check
 		return (-1);
-	else
+	while (stop) // While No EOF or \n... in reality
 	{
-		*str = ft_strnew(0);
-		while ((byte_read = read(fd, buf, BUF_SIZE)) > 0) // tant qu on est pas arrive a EOF
+		if (stop = read(fd, buf, BUFF_SIZE)) // Can't read anymore :(
+			return (-1);
+		if (ft_searchbak(bufr) == 0) // Is a baque here ? Case no baque.
 		{
-
-			// Doit bouffer un coup de buffer
-			// Scanner ce qu'il a bouffe
-			// Si le scanner return 0
-				// OKLM on stocke (sans le '\0' ?)
-			// sinon
-				// GO PRECISE_SCAN pour trouver la ou s'arreter
-				// stocker ce qu'il faut
-				// MAIS RETURN 1
-
-
-			//buf[byte_read] = '\0';
-			//*str = ft_strjoin(*str, buf);
+			// COPY CORRECTLY (\0, at the end , strjoin last string ...)
 		}
-		//close(fd);
-		if (byte_read == -1)
-			return (error());
+		else if // BAQUE OR \0 INCOMING
+		{	
+				// COPY CORRECTLY (\0, at the end , strjoin last string ...)
+				// But return pls
+				stop = 0;
+		}
+		// clear buff ? (ft_strclr ? b_zero?)
 	}
-	return (0);
-
-
-
+	if (stop == 0)
+		return (1);
+	return (1);
 }

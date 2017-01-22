@@ -10,16 +10,19 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "gnl.h"
+#include "get_next_line.h"
 
 char* 	copy_case_zero(char *bufr, char *reader)
 {
 	int i;
 
 	i = 0;
-	// ALLOC PLS
 	while (bufr[i] != '\0')
-	{	
+		i++;
+	if (!(bufr = (char *)malloc(ft_strlen(bufr) + i + 1)))
+		return (NULL);
+	while (reader[i])
+	{
 		bufr[ft_strlen(bufr) + 1] = reader[i];
 		i++;
 	}
@@ -29,15 +32,14 @@ char* 	copy_case_zero(char *bufr, char *reader)
 
 char* 	copy_case_line(char *bufr, char *reader)
 {
-	// COPY CORRECTLY (ONLY strjoin last string ...)
-	// DO NOT copy \n.
-	// replace by \0
-
-	// ALLOC PLS
 	int i;
 
 	i = 0;
 	while (bufr[i] != '\n')
+		i++;
+	if (!(bufr = (char *)malloc(ft_strlen(bufr) + i + 1)))
+		return (NULL);
+	while (reader[i] != '\n')
 	{	
 		bufr[ft_strlen(bufr) + 1] = reader[i];
 		i++;
@@ -48,10 +50,18 @@ char* 	copy_case_line(char *bufr, char *reader)
 
 char*	copy_case_normal(char *bufr, char *reader)
 {
-	// COPY CORRECTLY (ONLY strjoin last string ...)
+	int i;
 
-	// ALLOC PLS
-	ft_strjoin(bufr, reader);
+	i = 0;
+	if (!(bufr = (char *)malloc(ft_strlen(bufr) + ft_strlen(reader))))
+		return (NULL);
+	while (reader[i] != '\0')
+	{	
+		bufr[ft_strlen(bufr) + 1] = reader[i];
+		i++;
+	}
+	bufr[ft_strlen(bufr) + 1] = '\0';
+	return (bufr);
 }
 
 int		get_next_line(const int fd, char **line)
@@ -67,17 +77,16 @@ int		get_next_line(const int fd, char **line)
 			return (-1);
 		if (ft_strchr(reader, '\0')) // Case Zero.
 		{	
-			bufr = copy_case_zero(bufr, reader)
+			bufr = copy_case_zero(bufr, reader);
 			return (0);
 		}
 		else if (ft_strchr(reader, '\n')) // Case line.
 		{	
-			bufr = copy_case_line(bufr, reader)
+			bufr = copy_case_line(bufr, reader);
 			return (1);
 		}
 		else //Case nothing.
-		{
-			copy_case_normal()
-		}
+			bufr = copy_case_normal(bufr, reader);
+		free(reader);
 	}	
 }

@@ -12,54 +12,72 @@
 
 #include "gnl.h"
 
-// SCAN :D 
-int 	ft_searchbak(char *bufr)
+char* 	copy_case_zero(char *bufr, char *reader)
 {
-	if (ft_strchr(bufr, '\0'))
-		return (2);
-	else if (ft_strchr(bufr, '\n'))
-		return (1);
-	else
-		return (0);
+	int i;
+
+	i = 0;
+	// ALLOC PLS
+	while (bufr[i] != '\0')
+	{	
+		bufr[ft_strlen(bufr) + 1] = reader[i];
+		i++;
+	}
+	bufr[ft_strlen(bufr) + 1] = '\0';
+	return (bufr);
 }
 
-int 	after_cpy(char **line, char *bufr)
+char* 	copy_case_line(char *bufr, char *reader)
 {
-	// Do not forget to no copy \n.
-	//read(fd, buf, BUFF_SIZE)
+	// COPY CORRECTLY (ONLY strjoin last string ...)
+	// DO NOT copy \n.
+	// replace by \0
+
+	// ALLOC PLS
+	int i;
+
+	i = 0;
+	while (bufr[i] != '\n')
+	{	
+		bufr[ft_strlen(bufr) + 1] = reader[i];
+		i++;
+	}
+	bufr[ft_strlen(bufr) + 1] = '\0';
+	return (bufr);
 }
 
-int 	detect_zero(char *bufr)
+char*	copy_case_normal(char *bufr, char *reader)
 {
-	// Simply detect a \0 to do a correct return .
+	// COPY CORRECTLY (ONLY strjoin last string ...)
+
+	// ALLOC PLS
+	ft_strjoin(bufr, reader);
 }
 
 int		get_next_line(const int fd, char **line)
 {
-	int 		stop;
-	static char	bufr[BUF_SIZE + 1]; // Whole text before the last \n of the last exec
-	char 		*str;
+	static char	bufr[BUFF_SIZE + 1]; // Whole text before the last \n of the last exec
+	char 		*reader;
 
-	stop = 1;
-	if (fd < 0 || !line) // Validity check
-		return (-1);
-	while (stop) // While No EOF or \n... in reality
+	while (1) // While we are not at the EOF/\n.
 	{
-		if (stop = read(fd, buf, BUFF_SIZE)) // Can't read anymore :(
+		if (!(reader = read(fd, buf, BUFF_SIZE))) // Can't read anymore :(
 			return (-1);
-		if (ft_searchbak(bufr) == 0) // Is a baque here ? Case no baque.
-		{
-			// COPY CORRECTLY (\0, at the end , strjoin last string ...)
-		}
-		else if // BAQUE OR \0 INCOMING
+		if (fd < 0 || !line || reader[0] == '\0') // Validity check
+			return (-1);
+		if (ft_strchr(reader, '\0')) // Case Zero.
 		{	
-				// COPY CORRECTLY (\0, at the end , strjoin last string ...)
-				// But return pls
-				stop = 0;
+			bufr = copy_case_zero(bufr, reader)
+			return (0);
 		}
-		// clear buff ? (ft_strclr ? b_zero?)
-	}
-	if (stop == 0)
-		return (1);
-	return (1);
+		else if (ft_strchr(reader, '\n')) // Case line.
+		{	
+			bufr = copy_case_line(bufr, reader)
+			return (1);
+		}
+		else //Case nothing.
+		{
+			copy_case_normal()
+		}
+	}	
 }

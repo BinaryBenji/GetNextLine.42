@@ -12,7 +12,7 @@
 
 #include "get_next_line.h"
 
-char* 	copy_case_zero(char *bufr, char *reader)
+/*char* 	copy_case_zero(char *bufr, char *reader)
 {
 	int i;
 
@@ -62,31 +62,39 @@ char*	copy_case_normal(char *bufr, char *reader)
 	}
 	bufr[ft_strlen(bufr) + 1] = '\0';
 	return (bufr);
-}
+}*/
 
 int		get_next_line(const int fd, char **line)
 {
 	static char	bufr[BUFF_SIZE + 1]; // Whole text before the last \n of the last exec
-	char 		*reader;
+	char 		*buf; // Buffer
+	int 		ret; // Stop
+	//char *reader;
 
-	while (1) // While we are not at the EOF/\n.
+	while ((ret = read(fd, buf, BUFF_SIZE))) // While we are not at the EOF/\n.
 	{
-		if (!(reader = read(fd, buf, BUFF_SIZE))) // Can't read anymore :(
+		if (fd < 0 || !line || buf[0] == '\0') // Validity check
 			return (-1);
-		if (fd < 0 || !line || reader[0] == '\0') // Validity check
-			return (-1);
-		if (ft_strchr(reader, '\0')) // Case Zero.
+		//if (!(ret = (char *)malloc(BUFF_SIZE + 1 * sizeof(char))))
+		//	return (-2);
+		//ft_strcpy(reader,buf);
+		//printf("Le reader : %s \n", reader);
+		printf("Le buf : %s \n", buf);
+		if (ft_strchr(buf, '\0')) // Case Zero.
 		{	
-			bufr = copy_case_zero(bufr, reader);
-			return (0);
+			printf("Including zero ");
+			//bufr = copy_case_zero(bufr, reader);
+			//return (0);
 		}
-		else if (ft_strchr(reader, '\n')) // Case line.
+		if (ft_strchr(buf, '\n')) // Case line.
 		{	
-			bufr = copy_case_line(bufr, reader);
-			return (1);
+			printf("Including baque");
+			//bufr = copy_case_line(bufr, reader);
+			//return (1);
 		}
 		else //Case nothing.
-			bufr = copy_case_normal(bufr, reader);
-		free(reader);
-	}	
+			//bufr = copy_case_normal(bufr, reader);
+			printf("noting");
+	}
+	return (1);	
 }

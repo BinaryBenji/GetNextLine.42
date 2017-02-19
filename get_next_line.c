@@ -12,108 +12,78 @@
 
 #include "get_next_line.h"
 
-
-/*char 	*ft_end_copy(char *buf)
+char 	**ft_realloc_case(char **line, int len, int choice)
 {
-	int begin;
-	int i;
-	char *s;
-	int len;
-	char *buf;
+	char *stock;
+	int  lg;
 
-	i = 0;
-	begin = where_to_stop(buf,'\n');
-	len = ft_strlen(buf) - begin;
-	if (!(s = (char *)malloc(len * sizeof(char))))
+	lg = ft_strlen(*line);
+	if(!(stock = (char *)malloc(lg * sizeof(char) + 1)))
 		return (NULL);
-	while(buf[begin])
-	{	
-		s[i] = buf[begin];
-		begin++;
-		i++;
-	}
-	free(buf);
-	if (!(buf = (char *)malloc(len - begin + 1 * sizeof(char))))
-		return (NULL);
-	while()
+	ft_strcpy(stock, *line);
+	stock[lg+1] = '\0';
+	if (choice)
 	{
 
-
+		if(!(line = (char **)malloc((lg + len) * sizeof(char) + 1)))
+			return NULL;
+		ft_strcpy(*line, stock);
+		return (&(*line));
 	}
-	return (buf);
-}*/
+	else
+	{
+		if(!(line = (char **)malloc((lg + BUFF_SIZE) * sizeof(char) + 1)))
+			return NULL;
+		return (&(*line));
+	}
+} 
 
-int		where_to_stop(char *str,char stop)
+char 	*ft_strjoin_stop(char **line, char *buf) // 1 pour stop, 0 pour rien
 {
 	int i;
+	char pico[BUFF_SIZE];
+	int save;
 
 	i = 0;
-	while (str[i])
+	while (buf[i] == '\n')
 	{
-		if (str[i] == stop)
-			return (i);
+		pico[i] = buf[i];
 		i++;
 	}
-	return (i);
-}  
-
-char 	*ft_strjoin_stop(char *s1, char *s2)
-{
-	char	*s;
-	int		i;
-	int		j;
-	int 	stopper;
-
-	if (!s1 || !s2)
-		return (NULL);
-	stopper = where_to_stop(s2,'\n');
-	if (!(s = ft_strnew(ft_strlen(s1) + j + 1)))
-		return (NULL);
+	line = ft_realloc_case(line, i, 1);
+	save = i;
 	i = 0;
-	while (s1[i] != '\0')
+	while (pico[i])
 	{
-		s[i] = s1[i];
+		line[i] = &pico[i];
 		i++;
 	}
-	j = i;
-	i = 0;
-	while ((s2[i] != '\0') && (i < stopper))
-	{
-		s[j] = s2[i];
-		j++;
-		i++;
-	}  
-	s[j] = '\0';
-	return (s);
+	return (*line);
 }
 
 int		get_next_line(const int fd, char **line)
 {
-	static char	bufr[BUFF_SIZE + 1]; // RIP
+	static char	bufr[BUFF_SIZE + 1];
 	char 		*buf; // Buffer
-	int 		ret; // Stop
-	int i;
 
-	i = 0;
-	//bufr doit stocker le reste
-	//line, la ligne
-	while ((ret = read(fd, buf, BUFF_SIZE)))
+	while (read(fd, buf, BUFF_SIZE))
 	{
-		if (fd < 0 || !line || buf[0] == '\0') // Validity check
-			return (-1);
-		if (where_to_stop(buf, '\n') != ft_strlen(buf)) // Case line.
+		if(bufr)
 		{
-			line = ft_strjoin_stop(line, buf);
-			printf("\n Baque dans le buf \n");
-			printf("Ligne : %s", line);
-			//free(buf);
-			//bufr = ft_end_copy(buf);
-			return (1);
+			// Traiter le reste
 		}
-		else // Case no line
+		if(!line)
+			*line = ft_strnew(BUFF_SIZE);
+		if (ft_strchr(buf, '\n') == 0) // Case no line.
 		{
-			line = ft_strjoin(line,buf);
-			printf("Pas encore a la fin de la ligne \n");
+			if (line[0] != '\0')
+				*line = *ft_realloc_case(line, BUFF_SIZE, 0);
+			*line = ft_strjoin(*line, buf);
+		}
+		else  // Case line
+		{
+			*line = ft_strjoin_stop(line,buf);
+			return(1);
 		}
 	}
 	return (0);	

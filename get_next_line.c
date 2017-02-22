@@ -12,75 +12,89 @@
 
 #include "get_next_line.h"
 
-char 	**ft_realloc_case(char **line, int len, int choice)
+char 	*readone(char *bufr, int fd)
 {
-	int  lg;
-	char *stock;
+	char shot[BUFF_SIZE + 1];
 
-	stock = ft_strdup(*line);
-	lg = ft_strlen(*line);
-	if (choice)
-	{
-		ft_strclr(*line);
-		if(!(*line = (char **)malloc((lg + len) * sizeof(char) + 1)))
-			return NULL;
-		ft_strcpy(*line, stock);
-		return (*line);
-	}
-	else
-	{
-		ft_strclr(*line);
-		if(!(*line = (char **)malloc((lg + BUFF_SIZE) * sizeof(char) + 1)))
-			return NULL;
-		ft_strcpy(*line, stock);
-		return (*line);
-	}
-} 
+	ft_strclr(bufr);
+	read(fd, shot, BUFF_SIZE);
+	shot[BUFF_SIZE] = '\0';
+	ft_strcpy(bufr, shot);
+	return (bufr);
+}	
 
-char 	*ft_strjoin_stop(char **line, char *buf) // 1 pour stop, 0 pour rien
+char 	*cut_end(char *bufr)
 {
 	int i;
-	char pico[BUFF_SIZE];
+	char *tosave;
 
 	i = 0;
-	while (buf[i] != '\n')
+	while(bufr[i] != '\n')
+		i++;
+	if(!(tosave = (char *)malloc((i + 1)* sizeof(char))))
+		return NULL;
+	i = 0;
+	while(bufr[i] != '\n')
 	{
-		pico[i] = buf[i];
+		tosave[i] = bufr[i];
 		i++;
 	}
-	pico[i] = '\0';
-	*line = ft_strjoin(*line, pico);
-	return (*line);
+	tosave[i] = '\0';
+	return (tosave);
+}
+
+char 	*after_line(char *bufr)
+{
+	int i;
+	int j;
+	char *str;
+
+	i = 0;
+	j = 0;
+	while(bufr[i] != '\n')
+		i++;
+	//ft_strclr(bufr);
+	if(!(str = (char *)malloc(BUFF_SIZE - i + 1 * sizeof(char))))
+		return NULL;
+	i++;
+	while(i < BUFF_SIZE)
+	{
+		str[j] = bufr[i];
+		j++;
+		i++;
+	}
+	str[j] = '\0';
+	return(str);
 }
 
 int		get_next_line(const int fd, char **line)
 {
-	static char	bufr[BUFF_SIZE + 1];
-	char 		*buf; // Buffer
+	static char	*bufr;
+	char 		*save; // Saver --> will be pasted in line
+	char		*end;
 
-	while (read(fd, buf, BUFF_SIZE))
+	if (!line || fd < 0)
+		return (-1);
+	while (1)
 	{
-		/*if(bufr)
+		if (!bufr)
+			bufr = ft_memalloc(1);
+		if (!save)
+			save = ft_memalloc(1);
+		save = ft_strjoin(save, bufr);
+		if ((ft_strchr(bufr, '\n') == NULL) && (bufr[0] != '\0')) // Case no line.
 		{
-			// Traiter le reste
-		}*/
-		if (ft_strchr(buf, '\n') == 0) // Case no line.
-		{
-			if (!line)
-				*line = ft_realloc_case(*line, BUFF_SIZE, 0);
-			else
-			{
-				if(!(*line = (char **)malloc(BUFF_SIZE + 1 * sizeof(char))))
-					return -1;
-			}
-			*line = ft_strjoin(*line, buf);
+			*line = ft_strdup(save);
+			ft_strclr(bufr);
 		}
-		else  // Case line
-		{
-			*line = ft_strjoin_stop(line,buf);
-			printf("%s", *line);
-			return(1);
-		}
+		if (!(bufr == readone(bufr, fd)))
+			return (-1);
+		if (ft_strchr(bufr, '\n') != NULL) // Break if line
+			break;
 	}
+	end = cut_end(bufr);
+	bufr = after_line(bufr);
+	save = ft_strjoin(save, end);
+	*line = ft_strdup(save);
 	return (0);	
 }

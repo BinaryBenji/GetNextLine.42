@@ -74,7 +74,7 @@ int 	check_end(char *bufr)
 	i = 0;
 	if (bufr[i] == '\0')
 		return (0);  
-	while(i < ft_strlen(bufr) - 1)
+	while(i < ft_strlen(bufr))
 	{
 		if(bufr[i] == '\0')
 			return (1);

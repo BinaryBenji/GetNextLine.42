@@ -6,11 +6,11 @@
 /*   By: bzmuda <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/17 15:23:25 by bzmuda            #+#    #+#             */
-/*   Updated: 2017/02/23 11:24:43 by bzmuda           ###   ########.fr       */
+/*   Updated: 2017/02/23 14:02:26 by bzmuda           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/get_next_line.h"
+#include "get_next_line.h"
 
 char	*readone(char *bufr, int fd)
 {
@@ -20,7 +20,7 @@ char	*readone(char *bufr, int fd)
 	if(read(fd, shot, BUFF_SIZE) == -1)
 		return(NULL);
 	shot[BUFF_SIZE] = '\0';
-	ft_strcpy(bufr, shot);
+	bufr = ft_strdup(shot);
 	return (bufr);
 }
 
@@ -57,7 +57,7 @@ char	*after_line(char *bufr)
 	if (!(str = (char *)malloc(BUFF_SIZE - i + 1 * sizeof(char))))
 		return (NULL);
 	i++;
-	while (i < BUFF_SIZE)
+	while ((bufr[i]) && (i < BUFF_SIZE))
 	{
 		str[j] = bufr[i];
 		j++;
@@ -69,10 +69,12 @@ char	*after_line(char *bufr)
 
 int 	check_end(char *bufr)
 {
-	int i;
+	unsigned long i;
 
 	i = 0;
-	while(i < BUFF_SIZE)
+	if (bufr[i] == '\0')
+		return (0);  
+	while(i < ft_strlen(bufr) - 1)
 	{
 		if(bufr[i] == '\0')
 			return (1);
@@ -83,36 +85,28 @@ int 	check_end(char *bufr)
 
 int		get_next_line(const int fd, char **line)
 {
-	static char	*bufr;
+	static char	*bufr = "\0";
 	char		*save;
-	char		*end;
+	char 		*end;
 
-	save = NULL;
+	save = ft_memalloc(1);
 	if (!line || fd < 0)
 		return (-1);
 	while (1)
 	{
-		if (!bufr)
-			bufr = ft_memalloc(1);
-		if (!save)
-			save = ft_memalloc(1);
-		save = ft_strjoin(save, bufr);
-		if ((ft_strchr(bufr, '\n') == NULL) && (bufr[0] != '\0'))
-		{
-			*line = ft_strdup(save);
-			ft_strclr(bufr);
-		}
-		if (bufr != readone(bufr, fd))
-			return (-1);
-		if (ft_strchr(bufr, '\n') != NULL || check_end(bufr) == 1)
+		if ((ft_strchr(bufr, '\n') != NULL) || (check_end(bufr) == 1))
 			break ;
+		save = ft_strjoin(save, bufr);
+		*line = ft_strdup(save);
+		bufr = readone(bufr, fd);
 	}
 	end = cut_end(bufr);
-	if (ft_strchr(bufr, '\n'))
-		bufr = after_line(bufr);
 	save = ft_strjoin(save, end);
 	*line = ft_strdup(save);
-	if (check_end(bufr) != 1)
+	if (ft_strchr(bufr, '\n') != NULL)
+	{
+		bufr = after_line(bufr);
 		return (1);
+	}
 	return (0);
 }

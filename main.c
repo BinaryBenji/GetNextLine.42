@@ -10,11 +10,11 @@ int  main(int argc, char **argv)
   char  *line = NULL;
   int   fd = open(argv[1], O_RDONLY);
   get_next_line(fd, &line);
-  printf("%s\n", line);
+  printf("%s - ", line);
   get_next_line(fd, &line);
-  printf("%s\n", line);
+  printf("%s - ", line);
   get_next_line(fd, &line);
-  printf("%s\n", line);
+  printf("%s - ", line);
   get_next_line(fd, &line);
   printf("%s", line);
   //close(fd);

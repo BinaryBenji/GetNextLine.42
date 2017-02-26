@@ -8,15 +8,28 @@ int  main(int argc, char **argv)
 
   argc = 2;
   char  *line = NULL;
+  int ret;
   int   fd = open(argv[1], O_RDONLY);
-  get_next_line(fd, &line);
-  printf("%s - ", line);
-  get_next_line(fd, &line);
-  printf("%s - ", line);
-  get_next_line(fd, &line);
-  printf("%s - ", line);
-  get_next_line(fd, &line);
-  printf("%s", line);
+  
+  ret = get_next_line(fd, &line);
+  printf("ligne : %s#\n", line);
+  printf("return : %d\n", ret);
+
+  ret = get_next_line(fd, &line);
+  printf("ligne : %s#\n", line);
+  printf("return : %d\n", ret);
+
+  ret = get_next_line(fd, &line);
+  printf("ligne : %s#\n", line);
+  printf("return : %d\n", ret);
+
+  ret = get_next_line(fd, &line);
+  printf("ligne : %s#\n", line);
+  printf("return : %d\n", ret);
+
+  ret = get_next_line(fd, &line);
+  printf("ligne : %s#\n", line);
+  printf("return : %d\n", ret);
   //close(fd);
   //sleep(15);
   return (0);

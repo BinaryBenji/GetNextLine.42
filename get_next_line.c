@@ -15,12 +15,16 @@
 char	*readone(char *bufr, int fd)
 {
 	char shot[BUFF_SIZE + 1];
+	char *str;
+	int lec;
 
-	ft_strclr(bufr);
-	if(read(fd, shot, BUFF_SIZE) == -1)
+	lec = read(fd, shot, BUFF_SIZE);
+	shot[lec] = '\0';
+	
+	bufr = ft_strjoin("", shot);
+
+	if (bufr == "")
 		return(NULL);
-	shot[BUFF_SIZE] = '\0';
-	bufr = ft_strdup(shot);
 	return (bufr);
 }
 
@@ -67,41 +71,53 @@ char	*after_line(char *bufr)
 	return (str);
 }
 
-int 	check_end(char *bufr)
+int 	breakchecks(char *str) // Returns 1 if break is needed, 0 if not
 {
 	unsigned long i;
 
 	i = 0;
-	if (bufr[i] == '\0')
-		return (0);  
-	while(i < ft_strlen(bufr))
+	if (str[i] == '\0')
+		return (0);
+	if(ft_strchr(str, '\n') != NULL)
+		return (1);
+	if(ft_strlen(str) != BUFF_SIZE)
+		return (1);
+	while(i < BUFF_SIZE)
 	{
-		if(bufr[i] == '\0')
+		if (str[i] == '\0')
 			return (1);
 		i++;
 	}
-	return(0);
+	return (0);
 }
 
 int		get_next_line(const int fd, char **line)
 {
 	static char	*bufr = "\0";
 	char		*save;
-	char 		*end;
 
 	save = ft_memalloc(1);
 	if (!line || fd < 0)
 		return (-1);
 	while (1)
 	{
-		if ((ft_strchr(bufr, '\n') != NULL) || (check_end(bufr) == 1))
-			break ;
+		if ((bufr[0] != '\0') && ((ft_strchr(bufr, '\n') == NULL) || breakchecks(bufr) == 0))
+		{
+			save = ft_strjoin(save, bufr);
+			*line = ft_strdup(save);
+		}
+		if (breakchecks(bufr) == 1)
+			break;
+		if(bufr = readone(bufr, fd))
+			if(ft_strlen(bufr) == 0)
+				break;
+		if (breakchecks(bufr) == 1)
+			break;
 		save = ft_strjoin(save, bufr);
 		*line = ft_strdup(save);
-		bufr = readone(bufr, fd);
+		ft_strclr(bufr);
 	}
-	end = cut_end(bufr);
-	save = ft_strjoin(save, end);
+	save = ft_strjoin(save, cut_end(bufr));
 	*line = ft_strdup(save);
 	if (ft_strchr(bufr, '\n') != NULL)
 	{

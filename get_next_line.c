@@ -12,7 +12,7 @@
 
 #include "get_next_line.h"
 
-char	*readone(char *bufr, int fd)
+char	*readone(char *bufr, int fd) // Reads BUFF_SIZE characters. Returns NULL if
 {
 	char shot[BUFF_SIZE + 1];
 	char *str;
@@ -29,7 +29,7 @@ char	*readone(char *bufr, int fd)
 	return (bufr);
 }
 
-char	*cut_end(char *bufr)
+char	*cut_end(char *bufr) // Cuts the end of the line, when a \n is in the bufr variable
 {
 	int		i;
 	char	*tosave;
@@ -49,7 +49,7 @@ char	*cut_end(char *bufr)
 	return (tosave);
 }
 
-char	*after_line(char *bufr)
+char	*after_line(char *bufr) // Cuts everything after \n in variable bufr, in order to save it
 {
 	int		i;
 	int		j;
@@ -103,7 +103,8 @@ int		get_next_line(const int fd, char **line)
 		return (-1);
 	while (1)
 	{
-		if ((bufr != NULL) && (bufr[0] != '\0') && ((ft_strchr(bufr, '\n') == NULL) || breakchecks(bufr) == 0))
+		if ((bufr != NULL) && (bufr[0] != '\0') &&
+		 ((ft_strchr(bufr, '\n') == NULL) || breakchecks(bufr) == 0))
 			*line = ft_strdup(ft_strjoin(*line, bufr));
 		else if((bufr != NULL) && (breakchecks(bufr) == 1))
 			break;

@@ -21,7 +21,7 @@ char	*readone(char *bufr, int fd)
 	lec = read(fd, shot, BUFF_SIZE);
 	shot[lec] = '\0';
 	bufr = ft_strjoin("", shot);
-	if (bufr == "")
+	if (lec == 0) 
 	{
 		ft_strclr(bufr);
 		return(NULL);
@@ -103,21 +103,20 @@ int		get_next_line(const int fd, char **line)
 		return (-1);
 	while (1)
 	{
-		if ((bufr[0] != '\0') && ((ft_strchr(bufr, '\n') == NULL) || breakchecks(bufr) == 0))
+		if ((bufr != NULL) && (bufr[0] != '\0') && ((ft_strchr(bufr, '\n') == NULL) || breakchecks(bufr) == 0))
 			*line = ft_strdup(ft_strjoin(*line, bufr));
-		else if(breakchecks(bufr) == 1)
+		else if((bufr != NULL) && (breakchecks(bufr) == 1))
 			break;
-		if(bufr = readone(bufr, fd))
-			if(ft_strlen(bufr) == 0)
-				break;
+		if((bufr = readone(bufr, fd)) == NULL)
+			return (0);
+		if(ft_strlen(bufr) == 0)
+			break;
 		if (breakchecks(bufr) == 1)
 			break;
 		*line = ft_strdup(ft_strjoin(*line, bufr));
 		ft_strclr(bufr);
 	}
 	*line = ft_strdup(ft_strjoin(*line, cut_end(bufr)));
-	//save = ft_strjoin(save, cut_end(bufr));
-	//*line = ft_strdup(save);
 	bufr = after_line(bufr);
 	return (1);
 }

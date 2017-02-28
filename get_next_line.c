@@ -39,8 +39,8 @@ char	*ft_strjoin_free(char *s1, char *s2, int freez1, int freez2)
 		i++;
 	}
 	s[j] = '\0';
-	(freez1 > 0) ? ft_strdel(&s1) : NULL;
-	(freez2 > 0) ? ft_strdel(&s2) : NULL;
+	(freez1 > 0) ? free((char *)s1) : NULL;
+	(freez2 > 0) ? free((char *)s2) : NULL;
 	return (s);
 }
 
@@ -90,8 +90,7 @@ char	*handle_end(char *bufr, int choice)
 		str[j] = '\0';
 		return (str);
 	}
-	i++;
-	str = ft_strnew(ft_strlen(bufr) - i + 1);
+	str = ft_strnew(ft_strlen(bufr) - (i++) + 1);
 	while (bufr[i])
 		str[j++] = bufr[i++];
 	str[j] = '\0';
@@ -127,22 +126,22 @@ int		get_next_line(const int fd, char **line)
 
 	if (fd < 0 || !line || read(fd, bufr, 0) == -1)
 		return (-1);
-	*line = ft_strnew(1);
+	*line = "\0";
 	while (1)
 	{
 		if ((bufr != NULL) && (bufr[0] != '\0') &&
 			((ft_strchr(bufr, '\n') == NULL) || breakchecks(bufr) == 0))
-			*line = ft_strjoin_free(*line, bufr, 1, 0);
+			*line = ft_strjoin_free(*line, bufr, 0, 1);
 		else if ((bufr != NULL) && (breakchecks(bufr) == 1))
 			break ;
 		if ((bufr = readone(bufr, fd)) == NULL)
 			return (0);
 		if (breakchecks(bufr) == 1)
 			break ;
-		*line = ft_strjoin_free(*line, bufr, 1, 0);
+		*line = ft_strjoin_free(*line, bufr, 0, 1);
 		bufr = "\0";
 	}
-	*line = ft_strjoin_free(*line, handle_end(bufr, 1), 1, 0);
+	*line = ft_strjoin_free(*line, handle_end(bufr, 1), 0, 1);
 	bufr = handle_end(bufr, 0);
 	return (1);
 }

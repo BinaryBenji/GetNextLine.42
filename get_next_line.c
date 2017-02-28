@@ -39,8 +39,8 @@ char	*ft_strjoin_free(char *s1, char *s2, int freez1, int freez2)
 		i++;
 	}
 	s[j] = '\0';
-	(freez1 > 0) ? free(s1) : NULL;
-	(freez2 > 0) ? free(s2) : NULL;
+	(freez1 > 0) ? ft_strdel(&s1) : NULL;
+	(freez2 > 0) ? ft_strdel(&s2) : NULL;
 	return (s);
 }
 
@@ -95,6 +95,7 @@ char	*handle_end(char *bufr, int choice)
 	while (bufr[i])
 		str[j++] = bufr[i++];
 	str[j] = '\0';
+	free(bufr);
 	return (str);
 }
 
@@ -126,7 +127,7 @@ int		get_next_line(const int fd, char **line)
 
 	if (fd < 0 || !line || read(fd, bufr, 0) == -1)
 		return (-1);
-	*line = ft_strnew(0);
+	*line = ft_strnew(1);
 	while (1)
 	{
 		if ((bufr != NULL) && (bufr[0] != '\0') &&

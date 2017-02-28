@@ -15,7 +15,6 @@
 char	*readone(char *bufr, int fd) // Reads BUFF_SIZE characters. Returns NULL if
 {
 	char shot[BUFF_SIZE + 1];
-	char *str;
 	int lec;
 
 	lec = read(fd, shot, BUFF_SIZE);
@@ -23,53 +22,39 @@ char	*readone(char *bufr, int fd) // Reads BUFF_SIZE characters. Returns NULL if
 	bufr = ft_strjoin("", shot);
 	if (lec == 0) 
 	{
+		ft_bzero(shot, BUFF_SIZE + 1);
 		ft_strclr(bufr);
 		return(NULL);
 	}
+	ft_bzero(shot, BUFF_SIZE + 1);
 	return (bufr);
 }
 
-char	*cut_end(char *bufr) // Cuts the end of the line, when a \n is in the bufr variable
+char	*handle_end(char *bufr, int choice) // Cuts the end of the line, when a \n is in the bufr variable
 {
 	int		i;
-	char	*tosave;
-
-	i = 0;
-	while ((bufr[i]) && (bufr[i] != '\n'))
-		i++;
-	if (!(tosave = (char *)malloc((i + 1) * sizeof(char))))
-		return (NULL);
-	i = 0;
-	while ((bufr[i]) && (bufr[i] != '\n'))
-	{
-		tosave[i] = bufr[i];
-		i++;
-	}
-	tosave[i] = '\0';
-	return (tosave);
-}
-
-char	*after_line(char *bufr) // Cuts everything after \n in variable bufr, in order to save it
-{
-	int		i;
-	int		j;
 	char	*str;
+	int j;
 
-	i = 0;
 	j = 0;
-	if(bufr == "")
-		return NULL;
+	i = 0;
 	while ((bufr[i]) && (bufr[i] != '\n'))
 		i++;
-	if (!(str = (char *)malloc(BUFF_SIZE - i + 1 * sizeof(char))))
-		return (NULL);
-	i++;
-	while ((bufr[i]) && (i < BUFF_SIZE))
+	if (choice == 1) // cut end
 	{
-		str[j] = bufr[i];
-		j++;
-		i++;
+		str = ft_strnew(i);
+		while ((bufr[j]) && (bufr[j] != '\n'))
+		{
+			str[j] = bufr[j];
+			j++;
+		}
+		str[j] = '\0';
+		return (str);
 	}
+	i++;
+	str = ft_strnew(ft_strlen(bufr) - i + 1);
+	while (bufr[i])
+		str[j++] = bufr[i++];
 	str[j] = '\0';
 	return (str);
 }
@@ -83,8 +68,6 @@ int 	breakchecks(char *str) // Returns 1 if break is needed, 0 if not
 		return (0);
 	if (ft_strchr(str, '\n') != NULL)
 		return (1);
-	//if (ft_strlen(str) != BUFF_SIZE)
-	//	return (1);
 	while(i < BUFF_SIZE)
 	{
 		if (str[i] == '\0')
@@ -98,9 +81,9 @@ int		get_next_line(const int fd, char **line)
 {
 	static char	*bufr = "\0";
 
-	*line = "";
 	if (!line || fd < 0)
 		return (-1);
+	*line = "";
 	while (1)
 	{
 		if ((bufr != NULL) && (bufr[0] != '\0') &&
@@ -110,14 +93,12 @@ int		get_next_line(const int fd, char **line)
 			break;
 		if((bufr = readone(bufr, fd)) == NULL)
 			return (0);
-		if(ft_strlen(bufr) == 0)
-			break;
 		if (breakchecks(bufr) == 1)
 			break;
 		*line = ft_strdup(ft_strjoin(*line, bufr));
 		ft_strclr(bufr);
 	}
-	*line = ft_strdup(ft_strjoin(*line, cut_end(bufr)));
-	bufr = after_line(bufr);
+	*line = ft_strdup(ft_strjoin(*line, handle_end(bufr,1)));
+	bufr = handle_end(bufr,0);
 	return (1);
 }

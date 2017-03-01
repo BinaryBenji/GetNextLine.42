@@ -13,34 +13,25 @@
 #include "get_next_line.h"
 
 /*
-**	Joins 2 strings into a new string. Free the s* lines if needed
+**	Join 2 strings into a new string. Free the s° lines if needed
 */
 
-char	*ft_strjoin_free(char *s1, char *s2, int freez1, int freez2)
+char	*ft_strjoin_free(char **s1, char *s2, int freez1, int freez2)
 {
 	char	*s;
 	int		i;
 	int		j;
 
-	if (!s1 || !s2 || (!(s = ft_strnew(ft_strlen(s1) + ft_strlen(s2) + 1))))
+	s = "";
+	if (!*s1 || !s2 || (!(s = ft_strnew(ft_strlen(*s1) + ft_strlen(s2)))))
+	{
+		free(s);
 		return (NULL);
-	i = 0;
-	while (s1[i] != '\0')
-	{
-		s[i] = s1[i];
-		i++;
 	}
-	j = i;
-	i = 0;
-	while (s2[i] != '\0')
-	{
-		s[j] = s2[i];
-		j++;
-		i++;
-	}
-	s[j] = '\0';
-	(freez1 > 0) ? free((char *)s1) : NULL;
-	(freez2 > 0) ? free((char *)s2) : NULL;
+	s = ft_strncat(s, *s1, ft_strlen(*s1));
+	s = ft_strncat(s, s2, ft_strlen(s2));
+	(freez1 > 0) ? free(s1) : 0;
+	(freez2 > 0) ? free(s2) : 0;
 	return (s);
 }
 
@@ -61,7 +52,7 @@ char	*readone(char *bufr, int fd)
 		ft_strclr(bufr);
 		return (NULL);
 	}
-	bufr = ft_strjoin_free("", shot, 0, 0);
+	bufr = ft_strjoin("", shot);
 	return (bufr);
 }
 
@@ -120,28 +111,36 @@ int		breakchecks(char *str)
 	return (0);
 }
 
+/*
+**	Checks if the fd is valid and readable
+**	"Break" is used when a '\n' or a '\0' is found in the bufr
+**	If none of these characters are found 
+**		"line" variable will store successive
+**			concatenations of bufr, which is a static var
+*/
+
 int		get_next_line(const int fd, char **line)
 {
 	static char	*bufr = "\0";
 
 	if (fd < 0 || !line || read(fd, bufr, 0) == -1)
 		return (-1);
-	*line = "\0";
+	*line = "";
 	while (1)
 	{
 		if ((bufr != NULL) && (bufr[0] != '\0') &&
 			((ft_strchr(bufr, '\n') == NULL) || breakchecks(bufr) == 0))
-			*line = ft_strjoin_free(*line, bufr, 0, 1);
+			*line = ft_strjoin_free(line, bufr, 0, 1);
 		else if ((bufr != NULL) && (breakchecks(bufr) == 1))
 			break ;
 		if ((bufr = readone(bufr, fd)) == NULL)
 			return (0);
 		if (breakchecks(bufr) == 1)
 			break ;
-		*line = ft_strjoin_free(*line, bufr, 0, 1);
+		*line = ft_strjoin_free(line, bufr, 0, 1);
 		bufr = "\0";
 	}
-	*line = ft_strjoin_free(*line, handle_end(bufr, 1), 0, 1);
+	*line = ft_strjoin_free(line, handle_end(bufr, 1), 0, 1);
 	bufr = handle_end(bufr, 0);
 	return (1);
 }

@@ -16,19 +16,19 @@
 **	Join 2 strings into a new string. Free the s° lines if needed
 */
 
-char	*ft_strjoin_free(char **s1, char *s2, int freez1, int freez2)
+char	*ft_strjoin_free(char *s1, char *s2, int freez1, int freez2)
 {
 	char	*s;
 	int		i;
 	int		j;
 
 	s = "";
-	if (!*s1 || !s2 || (!(s = ft_strnew(ft_strlen(*s1) + ft_strlen(s2)))))
+	if (!s1 || !s2 || (!(s = ft_strnew(ft_strlen(s1) + ft_strlen(s2)))))
 	{
 		free(s);
 		return (NULL);
 	}
-	s = ft_strncat(s, *s1, ft_strlen(*s1));
+	s = ft_strncat(s, s1, ft_strlen(s1));
 	s = ft_strncat(s, s2, ft_strlen(s2));
 	(freez1 > 0) ? free(s1) : 0;
 	(freez2 > 0) ? free(s2) : 0;
@@ -130,17 +130,17 @@ int		get_next_line(const int fd, char **line)
 	{
 		if ((bufr != NULL) && (bufr[0] != '\0') &&
 			((ft_strchr(bufr, '\n') == NULL) || breakchecks(bufr) == 0))
-			*line = ft_strjoin_free(line, bufr, 0, 1);
+			*line = ft_strjoin_free(*line, bufr, 0, 1);
 		else if ((bufr != NULL) && (breakchecks(bufr) == 1))
 			break ;
 		if ((bufr = readone(bufr, fd)) == NULL)
 			return (0);
 		if (breakchecks(bufr) == 1)
 			break ;
-		*line = ft_strjoin_free(line, bufr, 0, 1);
+		*line = ft_strjoin_free(*line, bufr, 0, 1);
 		bufr = "\0";
 	}
-	*line = ft_strjoin_free(line, handle_end(bufr, 1), 0, 1);
+	*line = ft_strjoin_free(*line, handle_end(bufr, 1), 0, 1);
 	bufr = handle_end(bufr, 0);
 	return (1);
 }

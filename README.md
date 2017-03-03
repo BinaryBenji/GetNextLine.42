@@ -9,4 +9,4 @@ Reads a line on a file descriptor.
 
 <h3> Run the project : </h3>
 Compile libft : <code> make -C libft </code><br/>
-Compile whole project : <code> gcc -g get_next_line.c get_next_line.h libft/libft.h libft/libft.a main.c </code>
+Compile whole project : <code> gcc -Wall -Wextra -Werror get_next_line.c get_next_line.h libft/libft.h libft/libft.a main.c </code>

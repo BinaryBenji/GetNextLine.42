@@ -130,7 +130,7 @@ int		get_next_line(const int fd, char **line)
 		else if ((bufr != NULL) && (breakchecks(bufr) == 1))
 			break ;
 		if ((bufr = readone(bufr, fd)) == NULL)
-			return (0);
+			return (ft_strlen(*line) == 0 ? 0 : 1);
 		if (breakchecks(bufr) == 1)
 			break ;
 		*line = ft_strjoin_free(*line, bufr, 1, 1);
